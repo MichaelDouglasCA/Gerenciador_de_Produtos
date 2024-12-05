@@ -1,62 +1,64 @@
+---
+
 # Gerenciador de Produtos
 
-**Gerenciador de Produtos** é uma aplicação simples desenvolvida em Java, utilizando Hibernate para interação com banco de dados, permitindo realizar operações básicas de CRUD (Criar, Ler, Atualizar e Deletar) em uma tabela de produtos.
+O **Gerenciador de Produtos** é uma aplicação desenvolvida em Java, utilizando Hibernate para interação com o banco de dados, que permite realizar operações básicas de CRUD (Criar, Ler, Atualizar e Deletar) em uma tabela de produtos.
 
-Este projeto foi desenvolvido com o objetivo de demonstrar uma implementação simples de um sistema de gerenciamento de produtos, utilizando o Hibernate para persistência de dados e a interação com um banco de dados MySQL.
+Este projeto foi desenvolvido para demonstrar uma implementação simples de um sistema de gerenciamento de produtos, utilizando Hibernate para persistência de dados e integração com um banco de dados MySQL.
 
 ## Funcionalidades
 
-- **Adicionar Produtos**: Permite a criação de novos produtos com nome, preço e quantidade.
-- **Excluir Produtos**: Permite a remoção de produtos existentes da base de dados.
-- **Atualizar Produtos**: Permite a edição de dados de produtos, como nome, preço e quantidade.
-- **Listar Produtos**: Exibe todos os produtos cadastrados no banco de dados.
-- **Pesquisar Produtos**: Permite buscar produtos pelo nome, utilizando uma busca com base parcial.
+- **Adicionar Produtos**: Cria novos produtos com informações como nome, preço e quantidade.
+- **Excluir Produtos**: Remove produtos existentes do banco de dados.
+- **Atualizar Produtos**: Permite a edição de dados dos produtos, como nome, preço e quantidade.
+- **Listar Produtos**: Exibe todos os produtos cadastrados na base de dados.
+- **Pesquisar Produtos**: Busca produtos pelo nome, com suporte para pesquisa parcial.
 
 ## Tecnologias Utilizadas
 
 - **Java**: Linguagem principal para desenvolvimento da aplicação.
-- **Hibernate**: Framework ORM para mapeamento objeto-relacional, utilizado para persistir e recuperar dados do banco de dados.
+- **Hibernate**: Framework ORM (Object-Relational Mapping) utilizado para mapear objetos Java para tabelas do banco de dados.
 - **MySQL**: Banco de dados utilizado para armazenar as informações dos produtos.
-- **JPA (Jakarta Persistence API)**: API para gerenciamento de dados relacionais, integrando com o Hibernate.
-- **SQL**: Linguagem utilizada para interagir com o banco de dados.
+- **JPA (Jakarta Persistence API)**: API para gerenciamento de dados relacionais, integrada com o Hibernate.
+- **SQL**: Linguagem de consulta usada para interagir com o banco de dados.
 
 ## Estrutura do Projeto
 
-O projeto contém as seguintes classes principais:
+O projeto é composto pelas seguintes classes principais:
 
 - **Produto.java**: Representa a entidade `Produto`, com os atributos `id`, `nome`, `preco` e `quantidade`. Esta classe está anotada com JPA para mapear os atributos para a tabela `produtos` no banco de dados.
-- **Gerenciadorestoque.java**: Responsável pela lógica de interação com o banco de dados, implementando as operações CRUD para a classe `Produto`.
+- **GerenciadorEstoque.java**: Responsável pela lógica de interação com o banco de dados, implementando as operações CRUD para a classe `Produto`.
 
 ## Requisitos
 
-Para rodar este projeto localmente, você precisa ter:
+Para rodar este projeto localmente, você precisará de:
 
 - **Java 8 ou superior** instalado.
 - **MySQL** instalado e configurado.
-- **IDE** (como IntelliJ IDEA ou Eclipse) para compilar e rodar o código.
-- Dependências do Hibernate configuradas no `pom.xml` (se usando Maven) ou `build.gradle` (se usando Gradle).
+- **IDE** (como IntelliJ IDEA ou Eclipse) para compilar e executar o código.
+- Dependências do Hibernate configuradas no `pom.xml` (se utilizando Maven) ou `build.gradle` (se utilizando Gradle).
 
 ## Como Rodar o Projeto
 
 1. **Clone o repositório**:
-   ```
-   git clone https://github.com/seuusuario/Gerenciador_de_Produtos.git
+   ```bash
+   git clone https://github.com/MichaelDouglasCA/Gerenciador_de_Produtos.git
    ```
 
 2. **Configuração do Banco de Dados**:
-   - Crie um banco de dados no MySQL chamado `banco_produtos` ou altere a URL de conexão no código para o nome de seu banco de dados.
+   - Crie um banco de dados no MySQL chamado `banco_produtos` ou altere a URL de conexão no código para o nome do seu banco de dados.
    - Exemplo de configuração no código:
      ```java
      .setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/banco_produtos")
      ```
 
-3. **Adicione dependências**:
-   - Se você estiver usando o Maven, adicione as dependências do Hibernate no `pom.xml`.
-   - Se usar Gradle, adicione as dependências no `build.gradle`.
+3. **Adicione as dependências**:
+   - Se estiver utilizando Maven, adicione as dependências do Hibernate no `pom.xml`.
+   - Se estiver utilizando Gradle, adicione as dependências no `build.gradle`.
 
 4. **Compile e execute o projeto**:
-   - Compile o código através de sua IDE ou com o comando Maven/Gradle.
-   - Execute a classe `Gerenciadorestoque` para iniciar a aplicação.
+   - Compile o código utilizando sua IDE ou com o comando Maven/Gradle.
+   - Execute a classe `GerenciadorEstoque` para iniciar a aplicação.
 
 ## Exemplos de Uso
 
@@ -91,10 +93,10 @@ produtosEncontrados.forEach(System.out::println);
 
 ## Contribuição
 
-Se você quiser contribuir para o desenvolvimento deste projeto, sinta-se à vontade para abrir uma **pull request** com suas melhorias ou sugestões.
+Se você quiser contribuir para o desenvolvimento deste projeto, sinta-se à vontade para abrir uma **pull request** com melhorias ou sugestões. Toda contribuição é bem-vinda!
 
 ## Licença
 
 Este projeto é licenciado sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
----
+--- 
