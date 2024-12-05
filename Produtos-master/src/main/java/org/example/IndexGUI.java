@@ -21,14 +21,19 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-
         public class IndexGUI extends JFrame {
             private Gerenciadorestoque gerenciador;
     private JTextField nomeField, precoField, quantidadeField, idField, searchField;
     private JTextArea outputArea;
     private JTable table;  
+        
+
+    
 
     public IndexGUI() {
+         // Tocar a música de fundo quando a janela for criada
+      
+
         gerenciador = new Gerenciadorestoque();
         
         // Configuração da janela
@@ -228,7 +233,7 @@ private class AddButtonListener implements ActionListener {
     }
     
 
-    // Listener do botão Editar Produto
+   
    // Listener do botão Editar Produto
 private class EditButtonListener implements ActionListener {
     @Override
@@ -284,10 +289,46 @@ private class EditButtonListener implements ActionListener {
                     outputArea.setText("Produto não encontrado.");
                 }
             } catch (NumberFormatException ex) {
-                List<Produto> produtos = gerenciador.searchProdutoByName(input.trim());
+                // Tenta buscar o produto pelo nome
+                List<Produto> produtos = gerenciador.searchProdutoByName(input.trim().toLowerCase());
                 if (!produtos.isEmpty()) {
                     Produto produto = produtos.get(0);
-                    // Exibe as informações no painel de edição
+                    // Cria um novo JDialog para edição do produto encontrado
+                    JDialog editDialog = new JDialog(IndexGUI.this, "Editar Produto", true);
+                    editDialog.setSize(400, 300);
+                    editDialog.setLayout(new GridLayout(5, 2, 10, 10));
+
+                    // Campos de edição
+                    JTextField nomeField = new JTextField(produto.getNome());
+                    JTextField precoField = new JTextField(String.valueOf(produto.getPreco()));
+                    JTextField quantidadeField = new JTextField(String.valueOf(produto.getQuantidade()));
+
+                    editDialog.add(new JLabel("Nome do Produto:"));
+                    editDialog.add(nomeField);
+
+                    editDialog.add(new JLabel("Preço do Produto:"));
+                    editDialog.add(precoField);
+
+                    editDialog.add(new JLabel("Quantidade do Produto:"));
+                    editDialog.add(quantidadeField);
+
+                    // Botão Salvar
+                    JButton salvarButton = new JButton("Salvar");
+                    salvarButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            produto.setNome(nomeField.getText());
+                            produto.setPreco(Double.parseDouble(precoField.getText()));
+                            produto.setQuantidade(Integer.parseInt(quantidadeField.getText()));
+                            gerenciador.updateProduto(produto.getId(), produto);
+                            outputArea.setText("Produto atualizado: " + produto);
+                            editDialog.dispose(); // Fecha o diálogo
+                        }
+                    });
+
+                    editDialog.add(salvarButton);
+                    editDialog.setLocationRelativeTo(null);
+                    editDialog.setVisible(true);
                 } else {
                     outputArea.setText("Produto não encontrado.");
                 }
@@ -295,6 +336,7 @@ private class EditButtonListener implements ActionListener {
         }
     }
 }
+
 
     
 
