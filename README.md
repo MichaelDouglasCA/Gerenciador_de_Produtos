@@ -35,7 +35,7 @@ Para rodar este projeto localmente, você precisará de:
 
 - **Java 8 ou superior** instalado.
 - **MySQL** instalado e configurado.
-- **IDE** (como IntelliJ IDEA ou Eclipse) para compilar e executar o código.
+- **IDE** (como IntelliJ IDEA, VSCode, Eclipse e etc.) para compilar e executar o código.
 - Dependências do Hibernate configuradas no `pom.xml` (se utilizando Maven) ou `build.gradle` (se utilizando Gradle).
 
 ## Como Rodar o Projeto
