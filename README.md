@@ -1,7 +1,3 @@
-Aqui está uma versão aprimorada do seu README para o projeto **Gerenciador_de_Produtos**:
-
----
-
 # Gerenciador de Produtos
 
 **Gerenciador de Produtos** é uma aplicação simples desenvolvida em Java, utilizando Hibernate para interação com banco de dados, permitindo realizar operações básicas de CRUD (Criar, Ler, Atualizar e Deletar) em uma tabela de produtos.
