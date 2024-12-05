@@ -80,7 +80,7 @@ public class IndexGUI extends JFrame {
 
         // Painel de botões
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 5, 10, 10)); // Ajustado para remover o botão de listar
+        buttonPanel.setLayout(new GridLayout(1, 5, 10, 10));
         buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         // Botões de ação
@@ -170,12 +170,12 @@ public class IndexGUI extends JFrame {
                         String nome = nomeField.getText();
                         Double preco = Double.parseDouble(precoField.getText());
                         int quantidade = Integer.parseInt(quantidadeField.getText());
-            
+
                         // Cria um novo produto e adiciona
                         Produto produto = new Produto(nome, preco, quantidade);
                         gerenciador.addProduto(produto);
                         outputArea.setText("Produto adicionado: " + produto);
-            
+
                         listarProdutos(); // Atualiza a tabela de produtos
                         addDialog.dispose(); // Fecha o diálogo após salvar o produto
                     } catch (NumberFormatException ex) {
@@ -183,52 +183,50 @@ public class IndexGUI extends JFrame {
                     }
                 }
             });
-            
+
             addDialog.add(salvarButton);
             addDialog.setLocationRelativeTo(null);
             addDialog.setVisible(true); // Exibe o diálogo
         }
     }
 
+    // Listener do botão Remover Produto
+    private class RemoveButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String input = JOptionPane.showInputDialog(
+                    IndexGUI.this,
+                    "Digite o ID ou Nome do Produto a ser removido:",
+                    "Remover Produto",
+                    JOptionPane.QUESTION_MESSAGE);
 
-   // Listener do botão Remover Produto
-private class RemoveButtonListener implements ActionListener {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        String input = JOptionPane.showInputDialog(
-                IndexGUI.this,
-                "Digite o ID ou Nome do Produto a ser removido:",
-                "Remover Produto",
-                JOptionPane.QUESTION_MESSAGE);
-
-        if (input != null && !input.trim().isEmpty()) {
-            try {
-                int id = Integer.parseInt(input.trim());
-                gerenciador.deleteProduto(id);
-                outputArea.setText("Produto removido com ID: " + id);
-
-                // Atualiza a lista de produtos após a remoção
-                listarProdutos(); // Método para listar os produtos na interface
-
-            } catch (NumberFormatException ex) {
-                List<Produto> produtos = gerenciador.searchProdutoByName(input.trim());
-                if (!produtos.isEmpty()) {
-                    Produto produto = produtos.get(0);
-                    gerenciador.deleteProduto(produto.getId());
-                    outputArea.setText("Produto removido: " + produto.getNome());
+            if (input != null && !input.trim().isEmpty()) {
+                try {
+                    int id = Integer.parseInt(input.trim());
+                    gerenciador.deleteProduto(id);
+                    outputArea.setText("Produto removido com ID: " + id);
 
                     // Atualiza a lista de produtos após a remoção
-                    listarProdutos(); // Atualiza a tabela de produtos após remoção
-                } else {
-                    outputArea.setText("Produto não encontrado pelo nome.");
+                    listarProdutos(); // Método para listar os produtos na interface
+
+                } catch (NumberFormatException ex) {
+                    List<Produto> produtos = gerenciador.searchProdutoByName(input.trim());
+                    if (!produtos.isEmpty()) {
+                        Produto produto = produtos.get(0);
+                        gerenciador.deleteProduto(produto.getId());
+                        outputArea.setText("Produto removido: " + produto.getNome());
+
+                        // Atualiza a lista de produtos após a remoção
+                        listarProdutos(); // Atualiza a tabela de produtos após remoção
+                    } else {
+                        outputArea.setText("Produto não encontrado pelo nome.");
+                    }
                 }
+            } else {
+                outputArea.setText("Entrada inválida. Por favor, insira um ID ou nome válido.");
             }
-        } else {
-            outputArea.setText("Entrada inválida. Por favor, insira um ID ou nome válido.");
         }
     }
-}
-
 
     // Listener do botão Editar Produto
     private class EditButtonListener implements ActionListener {
@@ -278,7 +276,6 @@ private class RemoveButtonListener implements ActionListener {
                                 editDialog.dispose(); // Fecha o diálogo
                             }
                         });
-                        
 
                         editDialog.add(salvarButton);
                         editDialog.setLocationRelativeTo(null);
