@@ -71,9 +71,14 @@ public class IndexGUI extends JFrame {
         add(scrollPane, BorderLayout.SOUTH);
 
         // Tabela para exibir os produtos
+        // Tabela para exibir os produtos
         table = new JTable(); // Initialize the instance variable
         table.setModel(new DefaultTableModel(new Object[] { "ID", "Nome", "Preço", "Quantidade" }, 0));
         table.setFillsViewportHeight(true);
+
+        // Permite ordenação clicando no cabeçalho das colunas
+        table.setAutoCreateRowSorter(true);
+
         JScrollPane tableScrollPane = new JScrollPane(table);
         tableScrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         add(tableScrollPane, BorderLayout.CENTER);
