@@ -70,7 +70,7 @@ public class IndexGUI extends JFrame {
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         add(scrollPane, BorderLayout.SOUTH);
 
-        // Tabela para exibir os produtos
+       
         // Tabela para exibir os produtos
         table = new JTable(); // Initialize the instance variable
         table.setModel(new DefaultTableModel(new Object[] { "ID", "Nome", "Preço", "Quantidade" }, 0));
@@ -145,55 +145,56 @@ public class IndexGUI extends JFrame {
     }
 
     // Listener do botão Adicionar Produto
-    private class AddButtonListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // Cria um novo JDialog para adicionar produto
-            JDialog addDialog = new JDialog(IndexGUI.this, "Adicionar Produto", true);
-            addDialog.setSize(400, 300);
-            addDialog.setLayout(new GridLayout(8, 2, 10, 10));
+   private class AddButtonListener implements ActionListener {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // Cria um novo JDialog para adicionar produto
+        JDialog addDialog = new JDialog(IndexGUI.this, "Adicionar Produto", true);
+        addDialog.setSize(400, 300);
+        addDialog.setLayout(new GridLayout(8, 2, 10, 10));
 
-            // Campos de entrada
-            JTextField nomeField = new JTextField();
-            JTextField precoField = new JTextField();
-            JTextField quantidadeField = new JTextField();
+        // Campos de entrada
+        nomeField = new JTextField();
+        precoField = new JTextField();
+        quantidadeField = new JTextField();
 
-            addDialog.add(new JLabel("Nome do Produto:"));
-            addDialog.add(nomeField);
-            addDialog.add(new JLabel("Preço do Produto:"));
-            addDialog.add(precoField);
-            addDialog.add(new JLabel("Quantidade do Produto:"));
-            addDialog.add(quantidadeField);
+        addDialog.add(new JLabel("Nome do Produto:"));
+        addDialog.add(nomeField);
+        addDialog.add(new JLabel("Preço do Produto:"));
+        addDialog.add(precoField);
+        addDialog.add(new JLabel("Quantidade do Produto:"));
+        addDialog.add(quantidadeField);
 
-            // Botão Salvar
-            JButton salvarButton = new JButton("Salvar");
-            salvarButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        // Coleta os dados dos campos
-                        String nome = nomeField.getText();
-                        Double preco = Double.parseDouble(precoField.getText());
-                        int quantidade = Integer.parseInt(quantidadeField.getText());
+        // Botão Salvar
+        JButton salvarButton = new JButton("Salvar");
+        salvarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    // Coleta os dados dos campos
+                    String nome = nomeField.getText();
+                    Double preco = Double.parseDouble(precoField.getText());
+                    int quantidade = Integer.parseInt(quantidadeField.getText());
 
-                        // Cria um novo produto e adiciona
-                        Produto produto = new Produto(nome, preco, quantidade);
-                        gerenciador.addProduto(produto);
-                        outputArea.setText("Produto adicionado: " + produto);
+                    // Cria um novo produto e adiciona
+                    Produto produto = new Produto(nome, preco, quantidade);
+                    gerenciador.addProduto(produto);
+                    outputArea.setText("Produto adicionado: " + produto);
 
-                        listarProdutos(); // Atualiza a tabela de produtos
-                        addDialog.dispose(); // Fecha o diálogo após salvar o produto
-                    } catch (NumberFormatException ex) {
-                        outputArea.setText("Erro: Preço e quantidade devem ser números válidos.");
-                    }
+                    listarProdutos(); // Atualiza a tabela de produtos
+                    addDialog.dispose(); // Fecha o diálogo após salvar o produto
+                } catch (NumberFormatException ex) {
+                    outputArea.setText("Erro: Preço e quantidade devem ser números válidos.");
                 }
-            });
+            }
+        });
 
-            addDialog.add(salvarButton);
-            addDialog.setLocationRelativeTo(null);
-            addDialog.setVisible(true); // Exibe o diálogo
-        }
+        addDialog.add(salvarButton);
+        addDialog.setLocationRelativeTo(null);
+        addDialog.setVisible(true); // Exibe o diálogo
     }
+}
+
 
     // Listener do botão Remover Produto
     private class RemoveButtonListener implements ActionListener {
