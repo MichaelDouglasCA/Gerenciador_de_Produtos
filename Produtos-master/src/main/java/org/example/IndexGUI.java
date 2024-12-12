@@ -290,6 +290,9 @@ public class IndexGUI extends JFrame {
                         outputArea.setText("Produto não encontrado.");
                     }
                 } catch (NumberFormatException ex) {
+                  
+                  
+                  
                     // Tenta buscar o produto pelo nome
                     List<Produto> produtos = gerenciador.searchProdutoByName(input.trim().toLowerCase());
                     if (!produtos.isEmpty()) {
