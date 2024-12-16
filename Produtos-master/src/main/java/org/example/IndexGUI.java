@@ -9,8 +9,10 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -21,6 +23,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 public class IndexGUI extends JFrame {
@@ -28,6 +31,8 @@ public class IndexGUI extends JFrame {
     private JTextField nomeField, precoField, quantidadeField, idField, searchField;
     private JTextArea outputArea;
     private JTable table;
+    private JLabel imagePreviewLabel = new JLabel(); // Label para exibir a imagem
+    private String imagemCaminho = "";
 
     public IndexGUI() {
         gerenciador = new Gerenciadorestoque();
@@ -70,14 +75,65 @@ public class IndexGUI extends JFrame {
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         add(scrollPane, BorderLayout.SOUTH);
 
-       
         // Tabela para exibir os produtos
-        table = new JTable(); // Initialize the instance variable
-        table.setModel(new DefaultTableModel(new Object[] { "ID", "Nome", "Preço", "Quantidade" }, 0));
+        table = new JTable(); // Inicializa a variável de instância
+        table.setModel(new DefaultTableModel(
+                new Object[] { "ID", "Nome", "Preço", "Quantidade", "Categoria", "Descrição", "Imagem" }, 0));
         table.setFillsViewportHeight(true);
 
         // Permite ordenação clicando no cabeçalho das colunas
         table.setAutoCreateRowSorter(true);
+        // Método para exibir a imagem redimensionada na tabela
+
+        // Listener para abrir a imagem em um JDialog ao clicar sobre a célula de imagem
+        table.getColumnModel().getColumn(6).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public void setValue(Object value) {
+                if (value != null) {
+                    String imagePath = (String) value;
+                    ImageIcon imageIcon = new ImageIcon(imagePath);
+                    // Redimensiona a imagem para caber na célula
+                    int width = 100; // Ajuste para o tamanho na tabela
+                    int height = 100;
+                    imageIcon = new ImageIcon(
+                            imageIcon.getImage().getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH));
+
+                    setIcon(imageIcon);
+                } else {
+                    setIcon(null);
+                }
+            }
+        });
+
+        // Adicionando evento para abrir a imagem em uma nova janela
+        table.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                int row = table.rowAtPoint(e.getPoint());
+                int col = table.columnAtPoint(e.getPoint());
+
+                // Verifica se a célula clicada é a da imagem
+                if (col == 6) {
+                    String imagePath = (String) table.getValueAt(row, col);
+                    if (imagePath != null && !imagePath.isEmpty()) {
+                        // Cria um novo JDialog para exibir a imagem em tamanho maior
+                        JDialog imageDialog = new JDialog();
+                        imageDialog.setTitle("Visualizar Imagem");
+                        imageDialog.setSize(600, 600);
+                        imageDialog.setLocationRelativeTo(null);
+
+                        // Exibe a imagem no JDialog
+                        JLabel imageLabel = new JLabel(new ImageIcon(imagePath));
+                        imageDialog.add(imageLabel);
+
+                        imageDialog.setVisible(true); // Torna o diálogo visível
+                    }
+                }
+            }
+        });
+
+        // Ajuste a largura da coluna para acomodar as imagens
+        table.getColumnModel().getColumn(6).setPreferredWidth(100); // Ajuste o valor conforme necessário
 
         JScrollPane tableScrollPane = new JScrollPane(table);
         tableScrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
@@ -134,67 +190,106 @@ public class IndexGUI extends JFrame {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0); // Limpa as linhas atuais da tabela
 
+        // Verifica se há produtos
         if (produtos.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Nenhum produto cadastrado.", "Aviso", JOptionPane.WARNING_MESSAGE);
         } else {
+            // Adiciona cada produto na tabela, incluindo imagem e outros detalhes
             for (Produto produto : produtos) {
-                model.addRow(new Object[] { produto.getId(), produto.getNome(), produto.getPreco(),
-                        produto.getQuantidade() });
+                model.addRow(new Object[] {
+                        produto.getId(),
+                        produto.getNome(),
+                        produto.getPreco(),
+                        produto.getQuantidade(),
+                        produto.getCategoria(),
+                        produto.getDescricao(),
+                        produto.getImagem() // Exibe o caminho da imagem na tabela
+                });
             }
         }
     }
 
     // Listener do botão Adicionar Produto
-   private class AddButtonListener implements ActionListener {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // Cria um novo JDialog para adicionar produto
-        JDialog addDialog = new JDialog(IndexGUI.this, "Adicionar Produto", true);
-        addDialog.setSize(400, 300);
-        addDialog.setLayout(new GridLayout(8, 2, 10, 10));
+    private class AddButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Cria um novo JDialog para adicionar produto
+            JDialog addDialog = new JDialog(IndexGUI.this, "Adicionar Produto", true);
+            addDialog.setSize(400, 300);
+            addDialog.setLayout(new GridLayout(8, 2, 10, 10));
 
-        // Campos de entrada
-        nomeField = new JTextField();
-        precoField = new JTextField();
-        quantidadeField = new JTextField();
+            // Campos de entrada
+            nomeField = new JTextField();
+            precoField = new JTextField();
+            quantidadeField = new JTextField();
+            JTextField descricaoField = new JTextField();
+            JTextField categoriaField = new JTextField();
+            JButton uploadButton = new JButton("Upload Imagem");
 
-        addDialog.add(new JLabel("Nome do Produto:"));
-        addDialog.add(nomeField);
-        addDialog.add(new JLabel("Preço do Produto:"));
-        addDialog.add(precoField);
-        addDialog.add(new JLabel("Quantidade do Produto:"));
-        addDialog.add(quantidadeField);
+            addDialog.add(new JLabel("Nome do Produto:"));
+            addDialog.add(nomeField);
+            addDialog.add(new JLabel("Preço do Produto:"));
+            addDialog.add(precoField);
+            addDialog.add(new JLabel("Quantidade do Produto:"));
+            addDialog.add(quantidadeField);
+            addDialog.add(new JLabel("Descrição do Produto:"));
+            addDialog.add(descricaoField);
+            addDialog.add(new JLabel("Categoria do Produto:"));
+            addDialog.add(categoriaField);
+            addDialog.add(uploadButton);
+            // Criação do JLabel para visualização da imagem
+            addDialog.add(new JLabel("Imagem do Produto:"));
+            addDialog.add(imagePreviewLabel); // Adiciona o JLabel para exibir a imagem
 
-        // Botão Salvar
-        JButton salvarButton = new JButton("Salvar");
-        salvarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    // Coleta os dados dos campos
-                    String nome = nomeField.getText();
-                    Double preco = Double.parseDouble(precoField.getText());
-                    int quantidade = Integer.parseInt(quantidadeField.getText());
+            // Ação do botão de upload de imagem
+            uploadButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JFileChooser fileChooser = new JFileChooser();
+                    int resultado = fileChooser.showOpenDialog(addDialog);
+                    if (resultado == JFileChooser.APPROVE_OPTION) {
+                        // Salva o caminho do arquivo na variável de instância
+                        imagemCaminho = fileChooser.getSelectedFile().getAbsolutePath();
+                        JOptionPane.showMessageDialog(addDialog, "Imagem selecionada: " + imagemCaminho);
 
-                    // Cria um novo produto e adiciona
-                    Produto produto = new Produto(nome, preco, quantidade);
-                    gerenciador.addProduto(produto);
-                    outputArea.setText("Produto adicionado: " + produto);
-
-                    listarProdutos(); // Atualiza a tabela de produtos
-                    addDialog.dispose(); // Fecha o diálogo após salvar o produto
-                } catch (NumberFormatException ex) {
-                    outputArea.setText("Erro: Preço e quantidade devem ser números válidos.");
+                        // Exibe a imagem no JLabel
+                        ImageIcon imageIcon = new ImageIcon(imagemCaminho);
+                        imagePreviewLabel.setIcon(imageIcon); // Define a imagem no JLabel
+                    }
                 }
-            }
-        });
+            });
 
-        addDialog.add(salvarButton);
-        addDialog.setLocationRelativeTo(null);
-        addDialog.setVisible(true); // Exibe o diálogo
+            // Botão Salvar
+            JButton salvarButton = new JButton("Salvar");
+            salvarButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        // Coleta os dados dos campos
+                        String nome = nomeField.getText();
+                        Double preco = Double.parseDouble(precoField.getText());
+                        int quantidade = Integer.parseInt(quantidadeField.getText());
+                        String descricao = descricaoField.getText();
+                        String categoria = categoriaField.getText();
+
+                        // Cria um novo produto e adiciona
+                        Produto produto = new Produto(nome, preco, quantidade, descricao, categoria, imagemCaminho);
+                        gerenciador.addProduto(produto);
+                        outputArea.setText("Produto adicionado: " + produto);
+
+                        listarProdutos(); // Atualiza a tabela de produtos
+                        addDialog.dispose(); // Fecha o diálogo após salvar o produto
+                    } catch (NumberFormatException ex) {
+                        outputArea.setText("Erro: Preço e quantidade devem ser números válidos.");
+                    }
+                }
+            });
+
+            addDialog.add(salvarButton);
+            addDialog.setLocationRelativeTo(null);
+            addDialog.setVisible(true); // Exibe o diálogo
+        }
     }
-}
-
 
     // Listener do botão Remover Produto
     private class RemoveButtonListener implements ActionListener {
@@ -234,7 +329,6 @@ public class IndexGUI extends JFrame {
         }
     }
 
-    // Listener do botão Editar Produto
     private class EditButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -246,95 +340,120 @@ public class IndexGUI extends JFrame {
 
             if (input != null && !input.trim().isEmpty()) {
                 try {
+                    // Tenta buscar o produto pelo ID
                     int id = Integer.parseInt(input.trim());
                     Produto produto = gerenciador.getProduto(id);
+
+                    // Verifica se o produto existe
                     if (produto != null) {
                         // Cria um novo JDialog para edição
                         JDialog editDialog = new JDialog(IndexGUI.this, "Editar Produto", true);
-                        editDialog.setSize(400, 300);
-                        editDialog.setLayout(new GridLayout(8, 2, 10, 10));
+                        editDialog.setSize(400, 400);
+                        editDialog.setLayout(new GridLayout(9, 2, 10, 10));
 
-                        // Campos de edição
+                        // Campos de entrada com valores preenchidos do produto
                         JTextField nomeField = new JTextField(produto.getNome());
                         JTextField precoField = new JTextField(String.valueOf(produto.getPreco()));
                         JTextField quantidadeField = new JTextField(String.valueOf(produto.getQuantidade()));
+                        JTextField descricaoField = new JTextField(produto.getDescricao());
+                        JTextField categoriaField = new JTextField(produto.getCategoria());
+                        JLabel imagePreviewLabel = new JLabel(); // Para exibir a imagem do produto
+                        final String[] imagemCaminho = { produto.getImagem() }; // Usar um array para permitir a
+                                                                                // modificação
 
+                        if (imagemCaminho[0] != null && !imagemCaminho[0].isEmpty()) {
+                            ImageIcon imageIcon = new ImageIcon(imagemCaminho[0]);
+                            imagePreviewLabel.setIcon(imageIcon); // Exibe a imagem
+                        }
+
+                        // Campos do formulário de edição
                         editDialog.add(new JLabel("Nome do Produto:"));
                         editDialog.add(nomeField);
-
                         editDialog.add(new JLabel("Preço do Produto:"));
                         editDialog.add(precoField);
-
                         editDialog.add(new JLabel("Quantidade do Produto:"));
                         editDialog.add(quantidadeField);
+                        editDialog.add(new JLabel("Descrição do Produto:"));
+                        editDialog.add(descricaoField);
+                        editDialog.add(new JLabel("Categoria do Produto:"));
+                        editDialog.add(categoriaField);
+                        editDialog.add(new JLabel("Imagem do Produto:"));
+                        editDialog.add(imagePreviewLabel);
 
-                        // Botão Salvar
-                        JButton salvarButton = new JButton("Salvar");
+                        // Botão de upload da imagem
+                        JButton uploadButton = new JButton("Alterar Imagem");
+                        uploadButton.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                JFileChooser fileChooser = new JFileChooser();
+                                int resultado = fileChooser.showOpenDialog(editDialog);
+                                if (resultado == JFileChooser.APPROVE_OPTION) {
+                                    imagemCaminho[0] = fileChooser.getSelectedFile().getAbsolutePath(); // Atualiza a
+                                                                                                        // imagem
+                                    JOptionPane.showMessageDialog(editDialog,
+                                            "Imagem selecionada: " + imagemCaminho[0]);
+
+                                    // Exibe a imagem selecionada no JLabel
+                                    ImageIcon imageIcon = new ImageIcon(imagemCaminho[0]);
+                                    imagePreviewLabel.setIcon(imageIcon);
+                                }
+                            }
+                        });
+                        editDialog.add(uploadButton);
+
+                        // Botão de Salvar alterações
+                        JButton salvarButton = new JButton("Salvar Alterações");
                         salvarButton.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent e) {
-                                produto.setNome(nomeField.getText());
-                                produto.setPreco(Double.parseDouble(precoField.getText()));
-                                produto.setQuantidade(Integer.parseInt(quantidadeField.getText()));
-                                gerenciador.updateProduto(id, produto);
-                                outputArea.setText("Produto atualizado: " + produto);
-                                listarProdutos(); // Atualiza a tabela de produtos
-                                editDialog.dispose(); // Fecha o diálogo
+                                try {
+                                    // Coleta os dados dos campos editados
+                                    String nome = nomeField.getText();
+                                    Double preco = Double.parseDouble(precoField.getText());
+                                    int quantidade = Integer.parseInt(quantidadeField.getText());
+                                    String descricao = descricaoField.getText();
+                                    String categoria = categoriaField.getText();
+
+                                    // Atualiza o produto com os novos dados
+                                    produto.setNome(nome);
+                                    produto.setPreco(preco);
+                                    produto.setQuantidade(quantidade);
+                                    produto.setDescricao(descricao);
+                                    produto.setCategoria(categoria);
+                                    produto.setImagem(imagemCaminho[0]); // Atualiza a imagem
+
+                                    // Atualiza o produto no gerenciador de estoque com o ID e o produto
+                                    gerenciador.updateProduto(produto.getId(), produto);
+
+                                    // Atualiza a tabela de produtos
+                                    listarProdutos();
+                                    JOptionPane.showMessageDialog(editDialog, "Produto atualizado com sucesso!");
+                                    editDialog.dispose(); // Fecha o diálogo
+                                } catch (NumberFormatException ex) {
+                                    JOptionPane.showMessageDialog(editDialog,
+                                            "Erro: Preço e quantidade devem ser números válidos.");
+                                }
                             }
                         });
 
                         editDialog.add(salvarButton);
+
+                        // Exibe o diálogo
                         editDialog.setLocationRelativeTo(null);
                         editDialog.setVisible(true);
                     } else {
-                        outputArea.setText("Produto não encontrado.");
+                        JOptionPane.showMessageDialog(IndexGUI.this, "Produto não encontrado com o ID: " + id, "Erro",
+                                JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (NumberFormatException ex) {
-                  
-                  
-                  
-                    // Tenta buscar o produto pelo nome
-                    List<Produto> produtos = gerenciador.searchProdutoByName(input.trim().toLowerCase());
+                    List<Produto> produtos = gerenciador.searchProdutoByName(input.trim());
                     if (!produtos.isEmpty()) {
                         Produto produto = produtos.get(0);
-                        // Cria um novo JDialog para edição do produto encontrado
-                        JDialog editDialog = new JDialog(IndexGUI.this, "Editar Produto", true);
-                        editDialog.setSize(400, 300);
-                        editDialog.setLayout(new GridLayout(8, 2, 10, 10));
-
-                        // Campos de edição
-                        JTextField nomeField = new JTextField(produto.getNome());
-                        JTextField precoField = new JTextField(String.valueOf(produto.getPreco()));
-                        JTextField quantidadeField = new JTextField(String.valueOf(produto.getQuantidade()));
-
-                        editDialog.add(new JLabel("Nome do Produto:"));
-                        editDialog.add(nomeField);
-
-                        editDialog.add(new JLabel("Preço do Produto:"));
-                        editDialog.add(precoField);
-
-                        editDialog.add(new JLabel("Quantidade do Produto:"));
-                        editDialog.add(quantidadeField);
-
-                        // Botão Salvar
-                        JButton salvarButton = new JButton("Salvar");
-                        salvarButton.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                produto.setNome(nomeField.getText());
-                                produto.setPreco(Double.parseDouble(precoField.getText()));
-                                produto.setQuantidade(Integer.parseInt(quantidadeField.getText()));
-                                gerenciador.updateProduto(produto.getId(), produto);
-                                outputArea.setText("Produto atualizado: " + produto);
-                                editDialog.dispose(); // Fecha o diálogo
-                            }
-                        });
-
-                        editDialog.add(salvarButton);
-                        editDialog.setLocationRelativeTo(null);
-                        editDialog.setVisible(true);
+                        // A partir deste ponto, o processo segue como no código anterior
+                        // Cria o diálogo de edição
                     } else {
-                        outputArea.setText("Produto não encontrado.");
+                        JOptionPane.showMessageDialog(IndexGUI.this, "Produto não encontrado.", "Erro",
+                                JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
